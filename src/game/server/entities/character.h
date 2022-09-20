@@ -65,7 +65,6 @@ public:
 	bool TakeDamage(vec2 Force, int Dmg, int From, int Weapon);
 
 	bool Spawn(class CPlayer *pPlayer, vec2 Pos);
-	bool Remove();
 
 	bool IncreaseHealth(int Amount);
 	bool IncreaseArmor(int Amount);
@@ -101,8 +100,6 @@ private:
 	int m_ReloadTimer;
 	int m_AttackTick;
 
-	int m_DamageTaken;
-
 	int m_EmoteType;
 	int m_EmoteStop;
 
@@ -120,8 +117,6 @@ private:
 	CNetObj_PlayerInput m_Input;
 	CNetObj_PlayerInput m_SavedInput;
 	int m_NumInputs;
-
-	int m_DamageTakenTick;
 
 	int m_Health;
 	int m_Armor;
@@ -143,8 +138,6 @@ private:
 	void SnapCharacter(int SnappingClient, int ID);
 	static bool IsSwitchActiveCb(int Number, void *pUser);
 	void HandleTiles(int Index);
-	float m_Time;
-	int m_LastBroadcast;
 	void DDRaceInit();
 	void HandleSkippableTiles(int Index);
 	void DDRaceTick();
@@ -170,7 +163,6 @@ public:
 	bool CanCollide(int ClientID);
 	bool SameTeam(int ClientID);
 	bool m_NinjaJetpack;
-	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	bool m_FrozenLastTick;
 	bool m_FreezeHammer;
@@ -182,11 +174,6 @@ public:
 	vec2 m_PrevPos;
 	int m_TeleCheckpoint;
 
-	int m_TimeCpBroadcastEndTick;
-	int m_LastTimeCp;
-	int m_LastTimeCpBroadcasted;
-	float m_aCurrentTimeCp[MAX_CHECKPOINTS];
-
 	int m_TileIndex;
 	int m_TileFIndex;
 
@@ -195,8 +182,6 @@ public:
 	vec2 m_Intersection;
 	int64_t m_LastStartWarning;
 	bool m_LastRefillJumps;
-	bool m_LastPenalty;
-	bool m_LastBonus;
 	vec2 m_TeleGunPos;
 	bool m_TeleGunTeleport;
 	bool m_IsBlueTeleGunTeleport;

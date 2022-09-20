@@ -620,22 +620,22 @@ void CGameTeams::SetStartTime(CPlayer *Player, int StartTime)
 
 void CGameTeams::SetLastTimeCp(CPlayer *Player, int LastTimeCp)
 {
-	if(!Player)
-		return;
-
-	CCharacter *pChar = Player->GetCharacter();
-	if(pChar)
-		pChar->m_LastTimeCp = LastTimeCp;
+	// if(!Player)
+	// 	return;
+	//
+	// CCharacter *pChar = Player->GetCharacter();
+	// if(pChar)
+	// 	pChar->m_LastTimeCp = LastTimeCp;
 }
 
 float *CGameTeams::GetCurrentTimeCp(CPlayer *Player)
 {
-	if(!Player)
-		return NULL;
-
-	CCharacter *pChar = Player->GetCharacter();
-	if(pChar)
-		return pChar->m_aCurrentTimeCp;
+	// if(!Player)
+	// 	return NULL;
+	//
+	// CCharacter *pChar = Player->GetCharacter();
+	// if(pChar)
+	// 	return pChar->m_aCurrentTimeCp;
 	return NULL;
 }
 

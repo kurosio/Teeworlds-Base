@@ -44,7 +44,6 @@ public:
 	int GetCID() const { return m_ClientID; }
 	uint32_t GetUniqueCID() const { return m_UniqueClientID; }
 	int GetClientVersion() const;
-	bool SetTimerType(int TimerType);
 
 	void Tick();
 	void PostTick();
@@ -96,7 +95,6 @@ public:
 	int m_aLastCommands[4];
 	int m_LastCommandPos;
 	int m_LastWhisperTo;
-	int m_LastInvited;
 
 	int m_SendVoteIndex;
 
@@ -199,7 +197,6 @@ public:
 	bool m_LastTargetInit;
 
 	bool m_EyeEmoteEnabled;
-	int m_TimerType;
 
 	int GetDefaultEmote() const;
 	void OverrideDefaultEmote(int Emote, int Tick);

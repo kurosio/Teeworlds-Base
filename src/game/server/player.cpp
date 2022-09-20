@@ -47,7 +47,6 @@ void CPlayer::Reset()
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-	m_LastInvited = 0;
 	m_WeakHookSpawn = false;
 
 	int *pIdMap = Server()->GetIdMap(m_ClientID);
@@ -64,11 +63,6 @@ void CPlayer::Reset()
 	m_ChatScore = 0;
 	m_Moderating = false;
 	m_EyeEmoteEnabled = true;
-	if(Server()->IsSixup(m_ClientID))
-		m_TimerType = TIMERTYPE_SIXUP;
-	else
-		m_TimerType = (g_Config.m_SvDefaultTimerType == TIMERTYPE_GAMETIMER || g_Config.m_SvDefaultTimerType == TIMERTYPE_GAMETIMER_AND_BROADCAST) ? TIMERTYPE_BROADCAST : g_Config.m_SvDefaultTimerType;
-
 	m_DefEmote = EMOTE_NORMAL;
 	m_Afk = true;
 	m_LastWhisperTo = -1;
@@ -398,15 +392,6 @@ void CPlayer::Snap(int SnappingClient)
 	if(m_Paused == PAUSE_PAUSED)
 		pDDNetPlayer->m_Flags |= EXPLAYERFLAG_PAUSED;
 
-	if(Server()->IsSixup(SnappingClient) && m_pCharacter && m_pCharacter->m_DDRaceState == DDRACE_STARTED &&
-		GameServer()->m_apPlayers[SnappingClient]->m_TimerType == TIMERTYPE_SIXUP)
-	{
-		protocol7::CNetObj_PlayerInfoRace *pRaceInfo = static_cast<protocol7::CNetObj_PlayerInfoRace *>(Server()->SnapNewItem(-protocol7::NETOBJTYPE_PLAYERINFORACE, id, sizeof(protocol7::CNetObj_PlayerInfoRace)));
-		if(!pRaceInfo)
-			return;
-		pRaceInfo->m_RaceStartTick = m_pCharacter->m_StartTime;
-	}
-
 	bool ShowSpec = m_pCharacter && m_pCharacter->IsPaused() && m_pCharacter->CanSnapCharacter(SnappingClient);
 
 	if(SnappingClient != SERVER_DEMO_CLIENT)
@@ -596,52 +581,6 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 				pPlayer->m_SpectatorID = SPEC_FREEVIEW;
 		}
 	}
-}
-
-bool CPlayer::SetTimerType(int TimerType)
-{
-	if(TimerType == TIMERTYPE_DEFAULT)
-	{
-		if(Server()->IsSixup(m_ClientID))
-			m_TimerType = TIMERTYPE_SIXUP;
-		else
-			SetTimerType(g_Config.m_SvDefaultTimerType);
-
-		return true;
-	}
-
-	if(Server()->IsSixup(m_ClientID))
-	{
-		if(TimerType == TIMERTYPE_SIXUP || TimerType == TIMERTYPE_NONE)
-		{
-			m_TimerType = TimerType;
-			return true;
-		}
-		else
-			return false;
-	}
-
-	if(TimerType == TIMERTYPE_GAMETIMER)
-	{
-		if(GetClientVersion() >= VERSION_DDNET_GAMETICK)
-			m_TimerType = TimerType;
-		else
-			return false;
-	}
-	else if(TimerType == TIMERTYPE_GAMETIMER_AND_BROADCAST)
-	{
-		if(GetClientVersion() >= VERSION_DDNET_GAMETICK)
-			m_TimerType = TimerType;
-		else
-		{
-			m_TimerType = TIMERTYPE_BROADCAST;
-			return false;
-		}
-	}
-	else
-		m_TimerType = TimerType;
-
-	return true;
 }
 
 void CPlayer::TryRespawn()

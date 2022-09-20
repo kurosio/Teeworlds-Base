@@ -362,10 +362,6 @@ private:
 	static void ConPractice(IConsole::IResult *pResult, void *pUserData);
 	static void ConSwap(IConsole::IResult *pResult, void *pUserData);
 	static void ConBroadTime(IConsole::IResult *pResult, void *pUserData);
-	static void ConJoinTeam(IConsole::IResult *pResult, void *pUserData);
-	static void ConLockTeam(IConsole::IResult *pResult, void *pUserData);
-	static void ConUnlockTeam(IConsole::IResult *pResult, void *pUserData);
-	static void ConInviteTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConMe(IConsole::IResult *pResult, void *pUserData);
 	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
 	static void ConConverse(IConsole::IResult *pResult, void *pUserData);
@@ -376,10 +372,6 @@ private:
 	static void ConShowAll(IConsole::IResult *pResult, void *pUserData);
 	static void ConSpecTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConNinjaJetpack(IConsole::IResult *pResult, void *pUserData);
-	static void ConSayTime(IConsole::IResult *pResult, void *pUserData);
-	static void ConSayTimeAll(IConsole::IResult *pResult, void *pUserData);
-	static void ConTime(IConsole::IResult *pResult, void *pUserData);
-	static void ConSetTimerType(IConsole::IResult *pResult, void *pUserData);
 	static void ConTele(IConsole::IResult *pResult, void *pUserData);
 	static void ConProtectedKill(IConsole::IResult *pResult, void *pUserData);
 
@@ -426,7 +418,6 @@ private:
 	void WhisperID(int ClientID, int VictimID, const char *pMessage);
 	void Converse(int ClientID, char *pStr);
 	bool IsVersionBanned(int Version);
-	void UnlockTeam(int ClientID, int Team);
 
 public:
 	CLayers *Layers() { return &m_Layers; }

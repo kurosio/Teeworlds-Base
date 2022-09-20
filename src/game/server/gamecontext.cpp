@@ -1571,9 +1571,6 @@ bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
 		return true;
 	}
 
-	CPlayer *pPlayer = m_apPlayers[ClientID];
-	if(ClientVersion >= VERSION_DDNET_GAMETICK)
-		pPlayer->m_TimerType = g_Config.m_SvDefaultTimerType;
 
 	// First update the teams state.
 	((CGameControllerDDRace *)m_pController)->m_Teams.SendTeamsState(ClientID);
@@ -1582,6 +1579,7 @@ bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
 	SendRecord(ClientID);
 
 	// And report correct tunings.
+	CPlayer *pPlayer = m_apPlayers[ClientID];
 	if(ClientVersion < VERSION_DDNET_EARLY_VERSION)
 		SendTuningParams(ClientID, pPlayer->m_TuneZone);
 

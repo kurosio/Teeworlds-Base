@@ -1238,8 +1238,6 @@ void CCharacter::FillAntibot(CAntibotCharacterData *pData)
 	pData->m_aLatestInputs[2].m_TargetY = m_LatestPrevPrevInput.m_TargetY;
 }
 
-void CCharacter::HandleBroadcast() { }
-
 void CCharacter::HandleSkippableTiles(int Index)
 {
 	// handle death-tiles and leaving gamelayer

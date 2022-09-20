@@ -142,7 +142,6 @@ private:
 	void HandleSkippableTiles(int Index);
 	void DDRaceTick();
 	void DDRacePostCoreTick();
-	void HandleBroadcast();
 	void HandleTuneLayer();
 	void SendZoneMsgs();
 	IAntibot *Antibot();

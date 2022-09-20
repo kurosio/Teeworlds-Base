@@ -8,7 +8,6 @@
 
 #include "entities/character.h"
 #include "player.h"
-#include "score.h"
 
 bool CheckClientID(int ClientID);
 
@@ -381,110 +380,6 @@ void CGameContext::ConTogglePauseVoted(IConsole::IResult *pResult, void *pUserDa
 	ToggleSpecPauseVoted(pResult, pUserData, CPlayer::PAUSE_PAUSED);
 }
 
-void CGameContext::ConTeamTop5(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(g_Config.m_SvHideScore)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-			"Showing the team top 5 is not allowed on this server.");
-		return;
-	}
-
-	if(pResult->NumArguments() == 0)
-	{
-		pSelf->Score()->ShowTeamTop5(pResult->m_ClientID, 1);
-	}
-	else if(pResult->NumArguments() == 1)
-	{
-		if(pResult->GetInteger(0) != 0)
-		{
-			pSelf->Score()->ShowTeamTop5(pResult->m_ClientID, pResult->GetInteger(0));
-		}
-		else
-		{
-			const char *pRequestedName = (str_comp(pResult->GetString(0), "me") == 0) ?
-							     pSelf->Server()->ClientName(pResult->m_ClientID) :
-							     pResult->GetString(0);
-			pSelf->Score()->ShowPlayerTeamTop5(pResult->m_ClientID, pRequestedName, 0);
-		}
-	}
-	else if(pResult->NumArguments() == 2 && pResult->GetInteger(1) != 0)
-	{
-		const char *pRequestedName = (str_comp(pResult->GetString(0), "me") == 0) ?
-						     pSelf->Server()->ClientName(pResult->m_ClientID) :
-						     pResult->GetString(0);
-		pSelf->Score()->ShowPlayerTeamTop5(pResult->m_ClientID, pRequestedName, pResult->GetInteger(1));
-	}
-	else
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "/top5team needs 0, 1 or 2 parameter. 1. = name, 2. = start number");
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Example: /top5team, /top5team me, /top5team Hans, /top5team \"Papa Smurf\" 5");
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Bad: /top5team Papa Smurf 5 # Good: /top5team \"Papa Smurf\" 5 ");
-	}
-}
-
-void CGameContext::ConTop(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(g_Config.m_SvHideScore)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-			"Showing the top is not allowed on this server.");
-		return;
-	}
-
-	if(pResult->NumArguments() > 0)
-		pSelf->Score()->ShowTop(pResult->m_ClientID, pResult->GetInteger(0));
-	else
-		pSelf->Score()->ShowTop(pResult->m_ClientID);
-}
-
-void CGameContext::ConTimes(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(pResult->NumArguments() == 0)
-	{
-		pSelf->Score()->ShowTimes(pResult->m_ClientID, 1);
-	}
-	else if(pResult->NumArguments() == 1)
-	{
-		if(pResult->GetInteger(0) != 0)
-		{
-			pSelf->Score()->ShowTimes(pResult->m_ClientID, pResult->GetInteger(0));
-		}
-		else
-		{
-			const char *pRequestedName = (str_comp(pResult->GetString(0), "me") == 0) ?
-							     pSelf->Server()->ClientName(pResult->m_ClientID) :
-							     pResult->GetString(0);
-			pSelf->Score()->ShowTimes(pResult->m_ClientID, pRequestedName, pResult->GetInteger(1));
-		}
-	}
-	else if(pResult->NumArguments() == 2 && pResult->GetInteger(1) != 0)
-	{
-		const char *pRequestedName = (str_comp(pResult->GetString(0), "me") == 0) ?
-						     pSelf->Server()->ClientName(pResult->m_ClientID) :
-						     pResult->GetString(0);
-		pSelf->Score()->ShowTimes(pResult->m_ClientID, pRequestedName, pResult->GetInteger(1));
-	}
-	else
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "/times needs 0, 1 or 2 parameter. 1. = name, 2. = start number");
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Example: /times, /times me, /times Hans, /times \"Papa Smurf\" 5");
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Bad: /times Papa Smurf 5 # Good: /times \"Papa Smurf\" 5 ");
-	}
-}
-
 void CGameContext::ConDND(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -505,51 +400,6 @@ void CGameContext::ConDND(IConsole::IResult *pResult, void *pUserData)
 		pPlayer->m_DND = true;
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "You will not receive any further global chat and server messages");
 	}
-}
-
-void CGameContext::ConMap(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(g_Config.m_SvMapVote == 0)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-			"/map is disabled");
-		return;
-	}
-
-	if(pResult->NumArguments() <= 0)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Example: /map adr3 to call vote for Adrenaline 3. This means that the map name must start with 'a' and contain the characters 'd', 'r' and '3' in that order");
-		return;
-	}
-
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-
-	if(pSelf->RateLimitPlayerVote(pResult->m_ClientID) || pSelf->RateLimitPlayerMapVote(pResult->m_ClientID))
-		return;
-
-	pSelf->Score()->MapVote(pResult->m_ClientID, pResult->GetString(0));
-}
-
-void CGameContext::ConMapInfo(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-
-	if(pResult->NumArguments() > 0)
-		pSelf->Score()->MapInfo(pResult->m_ClientID, pResult->GetString(0));
-	else
-		pSelf->Score()->MapInfo(pResult->m_ClientID, g_Config.m_SvMap);
 }
 
 void CGameContext::ConTimeout(IConsole::IResult *pResult, void *pUserData)
@@ -761,85 +611,6 @@ void CGameContext::ConSwap(IConsole::IResult *pResult, void *pUserData)
 	}
 
 	Teams.SwapTeamCharacters(pPlayer, pSwapPlayer, Team);
-}
-
-void CGameContext::ConSave(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(!g_Config.m_SvSaveGames)
-	{
-		pSelf->SendChatTarget(pResult->m_ClientID, "Save-function is disabled on this server");
-		return;
-	}
-
-	const char *pCode = "";
-	if(pResult->NumArguments() > 0)
-		pCode = pResult->GetString(0);
-
-	pSelf->Score()->SaveTeam(pResult->m_ClientID, pCode, g_Config.m_SvSqlServerName);
-}
-
-void CGameContext::ConLoad(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(!g_Config.m_SvSaveGames)
-	{
-		pSelf->SendChatTarget(pResult->m_ClientID, "Save-function is disabled on this server");
-		return;
-	}
-
-	if(pResult->NumArguments() > 0)
-		pSelf->Score()->LoadTeam(pResult->GetString(0), pResult->m_ClientID);
-	else
-		pSelf->Score()->GetSaves(pResult->m_ClientID);
-}
-
-void CGameContext::ConTeamRank(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(pResult->NumArguments() > 0)
-	{
-		if(!g_Config.m_SvHideScore)
-			pSelf->Score()->ShowTeamRank(pResult->m_ClientID, pResult->GetString(0));
-		else
-			pSelf->Console()->Print(
-				IConsole::OUTPUT_LEVEL_STANDARD,
-				"chatresp",
-				"Showing the team rank of other players is not allowed on this server.");
-	}
-	else
-		pSelf->Score()->ShowTeamRank(pResult->m_ClientID,
-			pSelf->Server()->ClientName(pResult->m_ClientID));
-}
-
-void CGameContext::ConRank(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(pResult->NumArguments() > 0)
-	{
-		if(!g_Config.m_SvHideScore)
-			pSelf->Score()->ShowRank(pResult->m_ClientID, pResult->GetString(0));
-		else
-			pSelf->Console()->Print(
-				IConsole::OUTPUT_LEVEL_STANDARD,
-				"chatresp",
-				"Showing the rank of other players is not allowed on this server.");
-	}
-	else
-		pSelf->Score()->ShowRank(pResult->m_ClientID,
-			pSelf->Server()->ClientName(pResult->m_ClientID));
 }
 
 void CGameContext::ConLockTeam(IConsole::IResult *pResult, void *pUserData)
@@ -1448,30 +1219,6 @@ void CGameContext::ConSetTimerType(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", aBuf);
 }
 
-void CGameContext::ConRescue(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-	CCharacter *pChr = pPlayer->GetCharacter();
-	if(!pChr)
-		return;
-
-	CGameTeams &Teams = ((CGameControllerDDRace *)pSelf->m_pController)->m_Teams;
-	int Team = Teams.m_Core.Team(pResult->m_ClientID);
-	if(!g_Config.m_SvRescue && !Teams.IsPractice(Team))
-	{
-		pSelf->SendChatTarget(pPlayer->GetCID(), "Rescue is not enabled on this server and you're not in a team with /practice turned on. Note that you can't earn a rank with practice enabled.");
-		return;
-	}
-
-	pChr->Rescue();
-	pChr->UnFreeze();
-}
-
 void CGameContext::ConTele(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -1538,65 +1285,4 @@ void CGameContext::ConProtectedKill(IConsole::IResult *pResult, void *pUserData)
 	{
 		pPlayer->KillCharacter(WEAPON_SELF);
 	}
-}
-
-void CGameContext::ConPoints(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(pResult->NumArguments() > 0)
-	{
-		if(!g_Config.m_SvHideScore)
-			pSelf->Score()->ShowPoints(pResult->m_ClientID, pResult->GetString(0));
-		else
-			pSelf->Console()->Print(
-				IConsole::OUTPUT_LEVEL_STANDARD,
-				"chatresp",
-				"Showing the global points of other players is not allowed on this server.");
-	}
-	else
-		pSelf->Score()->ShowPoints(pResult->m_ClientID,
-			pSelf->Server()->ClientName(pResult->m_ClientID));
-}
-
-void CGameContext::ConTopPoints(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(g_Config.m_SvHideScore)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-			"Showing the global top points is not allowed on this server.");
-		return;
-	}
-
-	if(pResult->NumArguments() > 0)
-		pSelf->Score()->ShowTopPoints(pResult->m_ClientID, pResult->GetInteger(0));
-	else
-		pSelf->Score()->ShowTopPoints(pResult->m_ClientID);
-}
-
-void CGameContext::ConTimeCP(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	if(g_Config.m_SvHideScore)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-			"Showing the checkpoint times is not allowed on this server.");
-		return;
-	}
-
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-
-	const char *pName = pResult->GetString(0);
-	pSelf->Score()->LoadPlayerData(pResult->m_ClientID, pName);
 }

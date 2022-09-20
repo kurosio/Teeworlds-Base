@@ -100,8 +100,6 @@ class CGameContext : public IGameServer
 	static void ConSwitchOpen(IConsole::IResult *pResult, void *pUserData);
 	static void ConPause(IConsole::IResult *pResult, void *pUserData);
 	static void ConChangeMap(IConsole::IResult *pResult, void *pUserData);
-	static void ConRandomMap(IConsole::IResult *pResult, void *pUserData);
-	static void ConRandomUnfinishedMap(IConsole::IResult *pResult, void *pUserData);
 	static void ConRestart(IConsole::IResult *pResult, void *pUserData);
 	static void ConBroadcast(IConsole::IResult *pResult, void *pUserData);
 	static void ConSay(IConsole::IResult *pResult, void *pUserData);
@@ -114,7 +112,6 @@ class CGameContext : public IGameServer
 	static void ConAddMapVotes(IConsole::IResult *pResult, void *pUserData);
 	static void ConVote(IConsole::IResult *pResult, void *pUserData);
 	static void ConVoteNo(IConsole::IResult *pResult, void *pUserData);
-	static void ConDrySave(IConsole::IResult *pResult, void *pUserData);
 	static void ConDumpAntibot(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
 
@@ -302,13 +299,10 @@ public:
 	bool RateLimitPlayerVote(int ClientID);
 	bool RateLimitPlayerMapVote(int ClientID);
 
-	std::shared_ptr<CScoreRandomMapResult> m_SqlRandomMapResult;
-
 private:
 	// starting 1 to make 0 the special value "no client id"
 	uint32_t NextUniqueClientID = 1;
 	bool m_VoteWillPass;
-	CScore *m_pScore;
 
 	//DDRace Console Commands
 
@@ -361,24 +355,12 @@ private:
 	static void ConToggleSpec(IConsole::IResult *pResult, void *pUserData);
 	static void ConToggleSpecVoted(IConsole::IResult *pResult, void *pUserData);
 	static void ConForcePause(IConsole::IResult *pResult, void *pUserData);
-	static void ConTeamTop5(IConsole::IResult *pResult, void *pUserData);
-	static void ConTop(IConsole::IResult *pResult, void *pUserData);
-	static void ConTimes(IConsole::IResult *pResult, void *pUserData);
-	static void ConPoints(IConsole::IResult *pResult, void *pUserData);
-	static void ConTopPoints(IConsole::IResult *pResult, void *pUserData);
-	static void ConTimeCP(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConUTF8(IConsole::IResult *pResult, void *pUserData);
 	static void ConDND(IConsole::IResult *pResult, void *pUserData);
-	static void ConMapInfo(IConsole::IResult *pResult, void *pUserData);
 	static void ConTimeout(IConsole::IResult *pResult, void *pUserData);
 	static void ConPractice(IConsole::IResult *pResult, void *pUserData);
 	static void ConSwap(IConsole::IResult *pResult, void *pUserData);
-	static void ConSave(IConsole::IResult *pResult, void *pUserData);
-	static void ConLoad(IConsole::IResult *pResult, void *pUserData);
-	static void ConMap(IConsole::IResult *pResult, void *pUserData);
-	static void ConTeamRank(IConsole::IResult *pResult, void *pUserData);
-	static void ConRank(IConsole::IResult *pResult, void *pUserData);
 	static void ConBroadTime(IConsole::IResult *pResult, void *pUserData);
 	static void ConJoinTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConLockTeam(IConsole::IResult *pResult, void *pUserData);
@@ -398,7 +380,6 @@ private:
 	static void ConSayTimeAll(IConsole::IResult *pResult, void *pUserData);
 	static void ConTime(IConsole::IResult *pResult, void *pUserData);
 	static void ConSetTimerType(IConsole::IResult *pResult, void *pUserData);
-	static void ConRescue(IConsole::IResult *pResult, void *pUserData);
 	static void ConTele(IConsole::IResult *pResult, void *pUserData);
 	static void ConProtectedKill(IConsole::IResult *pResult, void *pUserData);
 
@@ -449,7 +430,6 @@ private:
 
 public:
 	CLayers *Layers() { return &m_Layers; }
-	CScore *Score() { return m_pScore; }
 
 	enum
 	{

@@ -4,7 +4,6 @@
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
 #include <game/server/entity.h>
-#include <game/server/save.h>
 
 class CGameTeams;
 class CGameWorld;
@@ -79,8 +78,6 @@ public:
 
 	void SetEmote(int Emote, int Tick);
 
-	void Rescue();
-
 	int NeededFaketuning() { return m_NeededFaketuning; }
 	bool IsAlive() const { return m_Alive; }
 	bool IsPaused() const { return m_Paused; }
@@ -146,22 +143,17 @@ private:
 
 	void SnapCharacter(int SnappingClient, int ID);
 	static bool IsSwitchActiveCb(int Number, void *pUser);
-	void SetTimeCheckpoint(int TimeCheckpoint);
 	void HandleTiles(int Index);
 	float m_Time;
 	int m_LastBroadcast;
 	void DDRaceInit();
 	void HandleSkippableTiles(int Index);
-	void SetRescue();
 	void DDRaceTick();
 	void DDRacePostCoreTick();
 	void HandleBroadcast();
 	void HandleTuneLayer();
 	void SendZoneMsgs();
 	IAntibot *Antibot();
-
-	bool m_SetSavePos;
-	CSaveTee m_RescueTee;
 
 public:
 	CGameTeams *Teams() { return m_pTeams; }
@@ -204,7 +196,6 @@ public:
 
 	vec2 m_Intersection;
 	int64_t m_LastStartWarning;
-	int64_t m_LastRescue;
 	bool m_LastRefillJumps;
 	bool m_LastPenalty;
 	bool m_LastBonus;
@@ -247,8 +238,6 @@ public:
 	bool GrenadeHitDisabled() { return m_Core.m_GrenadeHitDisabled; }
 
 	bool IsSuper() { return m_Core.m_Super; }
-
-	CSaveTee &GetRescueTeeRef() { return m_RescueTee; }
 };
 
 enum

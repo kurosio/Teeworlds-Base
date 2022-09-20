@@ -206,10 +206,6 @@ public:
 	bool CanOverrideDefaultEmote() const;
 
 	bool m_FirstPacket;
-	int64_t m_LastSQLQuery;
-	void ProcessScoreResult(CScorePlayerResult &Result);
-	std::shared_ptr<CScorePlayerResult> m_ScoreQueryResult;
-	std::shared_ptr<CScorePlayerResult> m_ScoreFinishResult;
 	bool m_NotEligibleForFinish;
 	int64_t m_EligibleForFinishCheck;
 	bool m_VotedForPractice;

@@ -3,7 +3,6 @@
 #include "entities/character.h"
 #include "gamecontroller.h"
 #include "player.h"
-#include "score.h"
 #include "teehistorian.h"
 
 #include <engine/shared/config.h>
@@ -185,7 +184,7 @@ void CGameTeams::OnCharacterStart(int ClientID)
 
 void CGameTeams::OnCharacterFinish(int ClientID)
 {
-	if((m_Core.Team(ClientID) == TEAM_FLOCK && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO) || m_Core.Team(ClientID) == TEAM_SUPER)
+	/*if((m_Core.Team(ClientID) == TEAM_FLOCK && g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO) || m_Core.Team(ClientID) == TEAM_SUPER)
 	{
 		CPlayer *pPlayer = GetPlayer(ClientID);
 		if(pPlayer && pPlayer->IsPlaying())
@@ -206,7 +205,7 @@ void CGameTeams::OnCharacterFinish(int ClientID)
 			m_aTeeFinished[ClientID] = true;
 		}
 		CheckTeamFinished(m_Core.Team(ClientID));
-	}
+	}*/
 }
 
 void CGameTeams::Tick()
@@ -294,7 +293,7 @@ void CGameTeams::Tick()
 
 void CGameTeams::CheckTeamFinished(int Team)
 {
-	if(TeamFinished(Team))
+	/*if(TeamFinished(Team))
 	{
 		CPlayer *apTeamPlayers[MAX_CLIENTS];
 		unsigned int PlayersCount = 0;
@@ -348,7 +347,7 @@ void CGameTeams::CheckTeamFinished(int Team)
 			ChangeTeamState(Team, TEAMSTATE_FINISHED); // TODO: Make it better
 			OnTeamFinish(apTeamPlayers, PlayersCount, Time, aTimestamp);
 		}
-	}
+	}*/
 }
 
 const char *CGameTeams::SetCharacterTeam(int ClientID, int Team)
@@ -641,7 +640,7 @@ float *CGameTeams::GetCurrentTimeCp(CPlayer *Player)
 
 void CGameTeams::OnTeamFinish(CPlayer **Players, unsigned int Size, float Time, const char *pTimestamp)
 {
-	int aPlayerCIDs[MAX_CLIENTS];
+	/*int aPlayerCIDs[MAX_CLIENTS];
 
 	for(unsigned int i = 0; i < Size; i++)
 	{
@@ -658,12 +657,12 @@ void CGameTeams::OnTeamFinish(CPlayer **Players, unsigned int Size, float Time, 
 	}
 
 	if(Size >= (unsigned int)g_Config.m_SvMinTeamSize)
-		GameServer()->Score()->SaveTeamScore(aPlayerCIDs, Size, Time, pTimestamp);
+		GameServer()->Score()->SaveTeamScore(aPlayerCIDs, Size, Time, pTimestamp);*/
 }
 
 void CGameTeams::OnFinish(CPlayer *Player, float Time, const char *pTimestamp)
 {
-	if(!Player || !Player->IsPlaying())
+	/*if(!Player || !Player->IsPlaying())
 		return;
 	// TODO:DDRace:btd: this ugly
 	const int ClientID = Player->GetCID();
@@ -813,7 +812,7 @@ void CGameTeams::OnFinish(CPlayer *Player, float Time, const char *pTimestamp)
 	{
 		Player->m_Score = TTime;
 		Player->m_HasFinishScore = true;
-	}
+	}*/
 }
 
 void CGameTeams::RequestTeamSwap(CPlayer *pPlayer, CPlayer *pTargetPlayer, int Team)
@@ -865,7 +864,7 @@ void CGameTeams::RequestTeamSwap(CPlayer *pPlayer, CPlayer *pTargetPlayer, int T
 
 void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPlayer, int Team)
 {
-	if(!pPrimaryPlayer || !pTargetPlayer)
+	/*if(!pPrimaryPlayer || !pTargetPlayer)
 		return;
 
 	char aBuf[128];
@@ -935,12 +934,12 @@ void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPla
 		"%s has swapped with %s.",
 		Server()->ClientName(pPrimaryPlayer->GetCID()), Server()->ClientName(pTargetPlayer->GetCID()));
 
-	GameServer()->SendChatTeam(Team, aBuf);
+	GameServer()->SendChatTeam(Team, aBuf);*/
 }
 
 void CGameTeams::ProcessSaveTeam()
 {
-	for(int Team = 0; Team < NUM_TEAMS; Team++)
+	/*for(int Team = 0; Team < NUM_TEAMS; Team++)
 	{
 		if(m_apSaveTeamResult[Team] == nullptr || !m_apSaveTeamResult[Team]->m_Completed)
 			continue;
@@ -1010,7 +1009,7 @@ void CGameTeams::ProcessSaveTeam()
 			break;
 		}
 		m_apSaveTeamResult[Team] = nullptr;
-	}
+	}*/
 }
 
 void CGameTeams::OnCharacterSpawn(int ClientID)

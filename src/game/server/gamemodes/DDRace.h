@@ -15,8 +15,6 @@ public:
 	CGameControllerDDRace(class CGameContext *pGameServer);
 	~CGameControllerDDRace();
 
-	CScore *Score();
-
 	void OnCharacterSpawn(class CCharacter *pChr) override;
 	void HandleCharacterTiles(class CCharacter *pChr, int MapIndex) override;
 
@@ -37,7 +35,5 @@ public:
 
 	std::map<int, std::vector<vec2>> m_TeleOuts;
 	std::map<int, std::vector<vec2>> m_TeleCheckOuts;
-
-	std::shared_ptr<CScoreInitResult> m_pInitResult;
 };
 #endif // GAME_SERVER_GAMEMODES_DDRACE_H

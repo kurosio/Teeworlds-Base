@@ -8,14 +8,13 @@
 #include <game/server/entities/character.h>
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
-#include <game/server/score.h>
 #include <game/version.h>
 
 #define GAME_TYPE_NAME "DDraceNetwork"
 #define TEST_TYPE_NAME "TestDDraceNetwork"
 
 CGameControllerDDRace::CGameControllerDDRace(class CGameContext *pGameServer) :
-	IGameController(pGameServer), m_Teams(pGameServer), m_pInitResult(nullptr)
+	IGameController(pGameServer), m_Teams(pGameServer)
 {
 	m_pGameType = g_Config.m_SvTestingCommands ? TEST_TYPE_NAME : GAME_TYPE_NAME;
 
@@ -23,11 +22,6 @@ CGameControllerDDRace::CGameControllerDDRace(class CGameContext *pGameServer) :
 }
 
 CGameControllerDDRace::~CGameControllerDDRace() = default;
-
-CScore *CGameControllerDDRace::Score()
-{
-	return GameServer()->Score();
-}
 
 void CGameControllerDDRace::OnCharacterSpawn(CCharacter *pChr)
 {
@@ -126,14 +120,6 @@ void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 	IGameController::OnPlayerConnect(pPlayer);
 	int ClientID = pPlayer->GetCID();
 
-	// init the player
-	Score()->PlayerData(ClientID)->Reset();
-	pPlayer->m_Score = Score()->PlayerData(ClientID)->m_BestTime ? Score()->PlayerData(ClientID)->m_BestTime : -9999;
-
-	// Can't set score here as LoadScore() is threaded, run it in
-	// LoadScoreThreaded() instead
-	Score()->LoadPlayerData(ClientID);
-
 	if(!Server()->ClientPrevIngame(ClientID))
 	{
 		char aBuf[512];
@@ -164,15 +150,6 @@ void CGameControllerDDRace::Tick()
 	IGameController::Tick();
 	m_Teams.ProcessSaveTeam();
 	m_Teams.Tick();
-
-	if(m_pInitResult != nullptr && m_pInitResult->m_Completed)
-	{
-		if(m_pInitResult->m_Success)
-		{
-			m_CurrentRecord = m_pInitResult->m_CurrentRecord;
-		}
-		m_pInitResult = nullptr;
-	}
 }
 
 void CGameControllerDDRace::DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg)

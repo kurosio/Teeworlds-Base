@@ -16,7 +16,6 @@
 #include <game/server/gamecontext.h>
 #include <game/server/gamecontroller.h>
 #include <game/server/player.h>
-#include <game/server/score.h>
 #include <game/server/teams.h>
 
 MACRO_ALLOC_POOL_ID_IMPL(CCharacter, MAX_CLIENTS)
@@ -1266,28 +1265,7 @@ void CCharacter::FillAntibot(CAntibotCharacterData *pData)
 
 void CCharacter::HandleBroadcast()
 {
-	CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
 
-	if(m_DDRaceState == DDRACE_STARTED && m_pPlayer->GetClientVersion() == VERSION_VANILLA &&
-		m_LastTimeCpBroadcasted != m_LastTimeCp && m_LastTimeCp > -1 &&
-		m_TimeCpBroadcastEndTick > Server()->Tick() && pData->m_BestTime && pData->m_aBestTimeCp[m_LastTimeCp] != 0)
-	{
-		char aBroadcast[128];
-		float Diff = m_aCurrentTimeCp[m_LastTimeCp] - pData->m_aBestTimeCp[m_LastTimeCp];
-		str_format(aBroadcast, sizeof(aBroadcast), "Checkpoint | Diff : %+5.2f", Diff);
-		GameServer()->SendBroadcast(aBroadcast, m_pPlayer->GetCID());
-		m_LastTimeCpBroadcasted = m_LastTimeCp;
-		m_LastBroadcast = Server()->Tick();
-	}
-	else if((m_pPlayer->m_TimerType == CPlayer::TIMERTYPE_BROADCAST || m_pPlayer->m_TimerType == CPlayer::TIMERTYPE_GAMETIMER_AND_BROADCAST) && m_DDRaceState == DDRACE_STARTED && m_LastBroadcast + Server()->TickSpeed() * g_Config.m_SvTimeInBroadcastInterval <= Server()->Tick())
-	{
-		char aBuf[32];
-		int Time = (int64_t)100 * ((float)(Server()->Tick() - m_StartTime) / ((float)Server()->TickSpeed()));
-		str_time(Time, TIME_HOURS, aBuf, sizeof(aBuf));
-		GameServer()->SendBroadcast(aBuf, m_pPlayer->GetCID(), false);
-		m_LastTimeCpBroadcasted = m_LastTimeCp;
-		m_LastBroadcast = Server()->Tick();
-	}
 }
 
 void CCharacter::HandleSkippableTiles(int Index)
@@ -1383,29 +1361,6 @@ bool CCharacter::IsSwitchActiveCb(int Number, void *pUser)
 	return !aSwitchers.empty() && pThis->Team() != TEAM_SUPER && aSwitchers[Number].m_aStatus[pThis->Team()];
 }
 
-void CCharacter::SetTimeCheckpoint(int TimeCheckpoint)
-{
-	if(TimeCheckpoint > -1 && m_DDRaceState == DDRACE_STARTED && m_aCurrentTimeCp[TimeCheckpoint] == 0.0f && m_Time != 0.0f)
-	{
-		m_LastTimeCp = TimeCheckpoint;
-		m_aCurrentTimeCp[m_LastTimeCp] = m_Time;
-		m_TimeCpBroadcastEndTick = Server()->Tick() + Server()->TickSpeed() * 2;
-		if(m_pPlayer->GetClientVersion() >= VERSION_DDRACE)
-		{
-			CPlayerData *pData = GameServer()->Score()->PlayerData(m_pPlayer->GetCID());
-			if(pData->m_BestTime && pData->m_aBestTimeCp[m_LastTimeCp] != 0.0f)
-			{
-				CNetMsg_Sv_DDRaceTime Msg;
-				Msg.m_Time = (int)(m_Time * 100.0f);
-				Msg.m_Finish = 0;
-				float Diff = (m_aCurrentTimeCp[m_LastTimeCp] - pData->m_aBestTimeCp[m_LastTimeCp]) * 100;
-				Msg.m_Check = (int)Diff;
-				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
-			}
-		}
-	}
-}
-
 void CCharacter::HandleTiles(int Index)
 {
 	int MapIndex = Index;
@@ -1420,8 +1375,6 @@ void CCharacter::HandleTiles(int Index)
 		m_LastBonus = false;
 		return;
 	}
-	SetTimeCheckpoint(Collision()->IsTimeCheckpoint(MapIndex));
-	SetTimeCheckpoint(Collision()->IsFTimeCheckpoint(MapIndex));
 	int TeleCheckpoint = Collision()->IsTeleCheckpoint(MapIndex);
 	if(TeleCheckpoint)
 		m_TeleCheckpoint = TeleCheckpoint;
@@ -1993,12 +1946,6 @@ void CCharacter::SetTeams(CGameTeams *pTeams)
 	m_Core.SetTeamsCore(&m_pTeams->m_Core);
 }
 
-void CCharacter::SetRescue()
-{
-	m_RescueTee.Save(this);
-	m_SetSavePos = true;
-}
-
 void CCharacter::DDRaceTick()
 {
 	mem_copy(&m_Input, &m_SavedInput, sizeof(m_Input));
@@ -2044,15 +1991,6 @@ void CCharacter::DDRaceTick()
 		{
 			m_Core.m_IsInFreeze = true;
 			break;
-		}
-	}
-
-	// look for save position for rescue feature
-	if(g_Config.m_SvRescue || ((g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO || Team() > TEAM_FLOCK) && Team() >= TEAM_FLOCK && Team() < TEAM_SUPER))
-	{
-		if(!m_Core.m_IsInFreeze && IsGrounded() && !m_Core.m_DeepFrozen)
-		{
-			SetRescue();
 		}
 	}
 
@@ -2252,7 +2190,6 @@ void CCharacter::DDRaceInit()
 	m_Paused = false;
 	m_DDRaceState = DDRACE_NONE;
 	m_PrevPos = m_Pos;
-	m_SetSavePos = false;
 	m_LastBroadcast = 0;
 	m_TeamBeforeSuper = 0;
 	m_Core.m_Id = GetPlayer()->GetCID();
@@ -2297,35 +2234,6 @@ void CCharacter::DDRaceInit()
 	if(g_Config.m_SvTeam == SV_TEAM_MANDATORY && Team == TEAM_FLOCK)
 	{
 		GameServer()->SendStartWarning(GetPlayer()->GetCID(), "Please join a team before you start");
-	}
-}
-
-void CCharacter::Rescue()
-{
-	if(m_SetSavePos && !m_Core.m_Super)
-	{
-		if(m_LastRescue + (int64_t)g_Config.m_SvRescueDelay * Server()->TickSpeed() > Server()->Tick())
-		{
-			char aBuf[256];
-			str_format(aBuf, sizeof(aBuf), "You have to wait %d seconds until you can rescue yourself", (int)((m_LastRescue + (int64_t)g_Config.m_SvRescueDelay * Server()->TickSpeed() - Server()->Tick()) / Server()->TickSpeed()));
-			GameServer()->SendChatTarget(GetPlayer()->GetCID(), aBuf);
-			return;
-		}
-
-		float StartTime = m_StartTime;
-		m_RescueTee.Load(this, Team());
-		// Don't load these from saved tee:
-		m_Core.m_Vel = vec2(0, 0);
-		m_Core.m_HookState = HOOK_IDLE;
-		m_StartTime = StartTime;
-		m_SavedInput.m_Direction = 0;
-		m_SavedInput.m_Jump = 0;
-		// simulate releasing the fire button
-		if((m_SavedInput.m_Fire & 1) != 0)
-			m_SavedInput.m_Fire++;
-		m_SavedInput.m_Fire &= INPUT_STATE_MASK;
-		m_SavedInput.m_Hook = 0;
-		m_pPlayer->Pause(CPlayer::PAUSE_NONE, true);
 	}
 }
 

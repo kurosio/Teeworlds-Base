@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, ubuntu-20.04, windows-2019]
+        os: [ubuntu-latest, windows-latest, ubuntu-20.04]
         include:
         - os: ubuntu-latest
           cmake-args: -G Ninja
@@ -41,16 +41,7 @@ jobs:
             CFLAGS: /WX
             CXXFLAGS: /WX
             LDFLAGS: /WX
-        - name: "Windows-2019 x32"
-          os: windows-2019
-          cmake-args: -A Win32
-          package-file: "*-win32.zip"
-          fancy: false
-          env:
-            CFLAGS: /WX
-            CXXFLAGS: /WX
-            LDFLAGS: /WX
-            
+
     steps:
     - uses: jakoch/install-vulkan-sdk-action@main
       name: Install Vulkan SDK

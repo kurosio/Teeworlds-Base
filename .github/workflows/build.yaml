@@ -52,6 +52,8 @@ jobs:
             LDFLAGS: /WX
             
     steps:
+    - uses: jakoch/install-vulkan-sdk-action@main
+      name: Install Vulkan SDK
     - uses: actions/checkout@v2
       with:
         submodules: true

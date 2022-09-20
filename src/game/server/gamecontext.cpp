@@ -1571,7 +1571,6 @@ bool CGameContext::OnClientDDNetVersionKnown(int ClientID)
 		return true;
 	}
 
-
 	// First update the teams state.
 	((CGameControllerDDRace *)m_pController)->m_Teams.SendTeamsState(ClientID);
 

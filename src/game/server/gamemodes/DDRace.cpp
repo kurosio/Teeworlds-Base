@@ -31,10 +31,7 @@ void CGameControllerDDRace::OnCharacterSpawn(CCharacter *pChr)
 	m_Teams.OnCharacterSpawn(pChr->GetPlayer()->GetCID());
 }
 
-void CGameControllerDDRace::HandleCharacterTiles(CCharacter *pChr, int MapIndex)
-{
-
-}
+void CGameControllerDDRace::HandleCharacterTiles(CCharacter *pChr, int MapIndex) { }
 
 void CGameControllerDDRace::OnPlayerConnect(CPlayer *pPlayer)
 {

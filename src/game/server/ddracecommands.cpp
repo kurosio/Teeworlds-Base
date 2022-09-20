@@ -70,7 +70,6 @@ void CGameContext::MoveCharacter(int ClientID, int X, int Y, bool Raw)
 
 	pChr->Core()->m_Pos.x += ((Raw) ? 1 : 32) * X;
 	pChr->Core()->m_Pos.y += ((Raw) ? 1 : 32) * Y;
-	pChr->m_DDRaceState = DDRACE_CHEAT;
 }
 
 void CGameContext::ConKillPlayer(IConsole::IResult *pResult, void *pUserData)
@@ -118,31 +117,6 @@ void CGameContext::ConUnEndlessHook(IConsole::IResult *pResult, void *pUserData)
 	if(pChr)
 	{
 		pChr->SetEndlessHook(false);
-	}
-}
-
-void CGameContext::ConSuper(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-	CCharacter *pChr = pSelf->GetPlayerChar(pResult->m_ClientID);
-	if(pChr && !pChr->IsSuper())
-	{
-		pChr->SetSuper(true);
-		pChr->UnFreeze();
-	}
-}
-
-void CGameContext::ConUnSuper(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-	CCharacter *pChr = pSelf->GetPlayerChar(pResult->m_ClientID);
-	if(pChr && pChr->IsSuper())
-	{
-		pChr->SetSuper(false);
 	}
 }
 
@@ -287,8 +261,6 @@ void CGameContext::ModifyWeapons(IConsole::IResult *pResult, void *pUserData,
 	{
 		pChr->GiveWeapon(Weapon, Remove);
 	}
-
-	pChr->m_DDRaceState = DDRACE_CHEAT;
 }
 
 void CGameContext::Teleport(CCharacter *pChr, vec2 Pos)
@@ -296,7 +268,6 @@ void CGameContext::Teleport(CCharacter *pChr, vec2 Pos)
 	pChr->Core()->m_Pos = Pos;
 	pChr->m_Pos = Pos;
 	pChr->m_PrevPos = Pos;
-	pChr->m_DDRaceState = DDRACE_CHEAT;
 }
 
 void CGameContext::ConToTeleporter(IConsole::IResult *pResult, void *pUserData)
@@ -716,32 +687,6 @@ void CGameContext::ConModerate(IConsole::IResult *pResult, void *pUserData)
 		pSelf->SendChatTarget(pResult->m_ClientID, "Active moderator mode enabled for you.");
 	else
 		pSelf->SendChatTarget(pResult->m_ClientID, "Active moderator mode disabled for you.");
-}
-
-void CGameContext::ConSetDDRTeam(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	CGameControllerDDRace *pController = (CGameControllerDDRace *)pSelf->m_pController;
-
-	if(g_Config.m_SvTeam == SV_TEAM_FORBIDDEN || g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "join",
-			"Teams are disabled");
-		return;
-	}
-
-	int Target = pResult->GetVictim();
-	int Team = pResult->GetInteger(1);
-
-	if(Team < TEAM_FLOCK || Team >= TEAM_SUPER)
-		return;
-
-	CCharacter *pChr = pSelf->GetPlayerChar(Target);
-
-	if((pController->m_Teams.m_Core.Team(Target) && pController->m_Teams.GetDDRaceState(pSelf->m_apPlayers[Target]) == DDRACE_STARTED) || (pChr && pController->m_Teams.IsPractice(pChr->Team())))
-		pSelf->m_apPlayers[Target]->KillCharacter(WEAPON_GAME);
-
-	pController->m_Teams.SetForceCharacterTeam(Target, Team);
 }
 
 void CGameContext::ConUninvite(IConsole::IResult *pResult, void *pUserData)

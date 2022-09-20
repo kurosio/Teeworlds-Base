@@ -27,7 +27,7 @@ CHAT_COMMAND("dnd", "", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, 
 CHAT_COMMAND("mapinfo", "?r[map]", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConMapInfo*/ nullptr, this, "Show info about the map with name r gives (current map by default)")
 CHAT_COMMAND("timeout", "?s[code]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConTimeout, this, "Set timeout protection code s")
 CHAT_COMMAND("practice", "?i['0'|'1']", CFGFLAG_CHAT | CFGFLAG_SERVER, ConPractice, this, "Enable cheats (currently only /rescue) for your current team's run, but you can't earn a rank")
-CHAT_COMMAND("swap", "?r[player name]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConSwap, this, "Request to swap your tee with another team member")
+CHAT_COMMAND("swap", "?r[player name]", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConSwap*/ nullptr, this, "Request to swap your tee with another team member")
 CHAT_COMMAND("save", "?r[code]", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConSave*/ nullptr, this, "Save team with code r.")
 CHAT_COMMAND("load", "?r[code]", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConLoad*/ nullptr, this, "Load with code r. /load to check your existing saves")
 CHAT_COMMAND("map", "?r[map]", CFGFLAG_CHAT | CFGFLAG_SERVER | CFGFLAG_NONTEEHISTORIC, /*ConMap*/ nullptr, this, "Vote a map by name")
@@ -63,6 +63,6 @@ CHAT_COMMAND("rescue", "", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConRescue*/ nullptr,
 CHAT_COMMAND("tp", "?r[player name]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConTele, this, "Teleport yourself to player or to where you are spectating if no player name is given")
 CHAT_COMMAND("teleport", "?r[player name]", CFGFLAG_CHAT | CFGFLAG_SERVER, ConTele, this, "Teleport yourself to player or to where you are spectating if no player name is given")
 
-CHAT_COMMAND("kill", "", CFGFLAG_CHAT | CFGFLAG_SERVER, ConProtectedKill, this, "Kill yourself when kill-protected during a long game (use f1, kill for regular kill)")
+CHAT_COMMAND("kill", "", CFGFLAG_CHAT | CFGFLAG_SERVER, /*ConProtectedKill*/ nullptr, this, "Kill yourself when kill-protected during a long game (use f1, kill for regular kill)")
 
 #undef CHAT_COMMAND

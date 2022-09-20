@@ -25,8 +25,8 @@ CONSOLE_COMMAND("unrifle", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnLaser, this, 
 CONSOLE_COMMAND("unjetpack", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnJetpack, this, "Removes the jetpack from you")
 CONSOLE_COMMAND("unweapons", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnWeapons, this, "Removes all weapons from you")
 CONSOLE_COMMAND("ninja", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConNinja, this, "Makes you a ninja")
-CONSOLE_COMMAND("super", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConSuper, this, "Makes you super")
-CONSOLE_COMMAND("unsuper", "", CFGFLAG_SERVER, ConUnSuper, this, "Removes super from you")
+CONSOLE_COMMAND("super", "", CFGFLAG_SERVER | CMDFLAG_TEST, /*ConSuper*/ nullptr, this, "Makes you super")
+CONSOLE_COMMAND("unsuper", "", CFGFLAG_SERVER, /*ConUnSuper*/ nullptr, this, "Removes super from you")
 CONSOLE_COMMAND("endless_hook", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConEndlessHook, this, "Gives you endless hook")
 CONSOLE_COMMAND("unendless_hook", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnEndlessHook, this, "Removes endless hook from you")
 CONSOLE_COMMAND("unsolo", "", CFGFLAG_SERVER | CMDFLAG_TEST, ConUnSolo, this, "Puts you out of solo part")
@@ -43,7 +43,7 @@ CONSOLE_COMMAND("move_raw", "i[x] i[y]", CFGFLAG_SERVER | CMDFLAG_TEST, ConMoveR
 CONSOLE_COMMAND("force_pause", "v[id] i[seconds]", CFGFLAG_SERVER, ConForcePause, this, "Force i to pause for i seconds")
 CONSOLE_COMMAND("force_unpause", "v[id]", CFGFLAG_SERVER, ConForcePause, this, "Set force-pause timer of i to 0.")
 
-CONSOLE_COMMAND("set_team_ddr", "v[id] ?i[team]", CFGFLAG_SERVER, ConSetDDRTeam, this, "Set ddrace team of a player")
+CONSOLE_COMMAND("set_team_ddr", "v[id] ?i[team]", CFGFLAG_SERVER, /*ConSetDDRTeam*/ nullptr, this, "Set ddrace team of a player")
 CONSOLE_COMMAND("uninvite", "v[id] ?i[team]", CFGFLAG_SERVER, ConUninvite, this, "Uninvite player from team")
 
 CONSOLE_COMMAND("vote_mute", "v[id] i[seconds]", CFGFLAG_SERVER, ConVoteMute, this, "Remove v's right to vote for i seconds")

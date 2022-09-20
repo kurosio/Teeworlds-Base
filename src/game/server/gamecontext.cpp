@@ -280,7 +280,7 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 		if(!(int)Dmg)
 			continue;
 
-		if((GetPlayerChar(Owner) ? !GetPlayerChar(Owner)->GrenadeHitDisabled() : g_Config.m_SvHit) || NoDamage || Owner == apEnts[i]->GetPlayer()->GetCID())
+		if((GetPlayerChar(Owner) && !GetPlayerChar(Owner)->GrenadeHitDisabled()) || NoDamage || Owner == apEnts[i]->GetPlayer()->GetCID())
 		{
 			if(Owner != -1 && apEnts[i]->IsAlive() && !apEnts[i]->CanCollide(Owner))
 				continue;
@@ -289,7 +289,7 @@ void CGameContext::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamag
 
 			// Explode at most once per team
 			int PlayerTeam = apEnts[i]->Team();
-			if((GetPlayerChar(Owner) ? GetPlayerChar(Owner)->GrenadeHitDisabled() : !g_Config.m_SvHit) || NoDamage)
+			if((GetPlayerChar(Owner) && GetPlayerChar(Owner)->GrenadeHitDisabled()) || NoDamage)
 			{
 				if(!CmaskIsSet(TeamMask, PlayerTeam))
 					continue;
@@ -957,7 +957,7 @@ void CGameContext::OnTick()
 
 							if(m_apPlayers[j] && !m_apPlayers[j]->m_Afk && m_apPlayers[j]->GetTeam() != TEAM_SPECTATORS &&
 								((Server()->Tick() - m_apPlayers[j]->m_JoinTick) / (Server()->TickSpeed() * 60) > g_Config.m_SvVoteVetoTime ||
-									(m_apPlayers[j]->GetCharacter() && m_apPlayers[j]->GetCharacter()->m_DDRaceState == DDRACE_STARTED &&
+									(m_apPlayers[j]->GetCharacter() &&
 										(Server()->Tick() - m_apPlayers[j]->GetCharacter()->m_StartTime) / (Server()->TickSpeed() * 60) > g_Config.m_SvVoteVetoTime)))
 							{
 								if(CurVote == 0)
@@ -2186,18 +2186,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam + Server()->TickSpeed() * g_Config.m_SvTeamChangeDelay > Server()->Tick()))
 				return;
 
-			//Kill Protection
-			CCharacter *pChr = pPlayer->GetCharacter();
-			if(pChr)
-			{
-				int CurrTime = (Server()->Tick() - pChr->m_StartTime) / Server()->TickSpeed();
-				if(g_Config.m_SvKillProtection != 0 && CurrTime >= (60 * g_Config.m_SvKillProtection) && pChr->m_DDRaceState == DDRACE_STARTED)
-				{
-					SendChatTarget(ClientID, "Kill Protection enabled. If you really want to join the spectators, first type /kill");
-					return;
-				}
-			}
-
 			if(pPlayer->m_TeamChangeTick > Server()->Tick())
 			{
 				pPlayer->m_LastSetTeam = Server()->Tick();
@@ -2443,14 +2431,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			CCharacter *pChr = pPlayer->GetCharacter();
 			if(!pChr)
 				return;
-
-			//Kill Protection
-			int CurrTime = (Server()->Tick() - pChr->m_StartTime) / Server()->TickSpeed();
-			if(g_Config.m_SvKillProtection != 0 && CurrTime >= (60 * g_Config.m_SvKillProtection) && pChr->m_DDRaceState == DDRACE_STARTED)
-			{
-				SendChatTarget(ClientID, "Kill Protection enabled. If you really want to kill, type /kill");
-				return;
-			}
 
 			pPlayer->m_LastKill = Server()->Tick();
 			pPlayer->KillCharacter(WEAPON_SELF);
@@ -3246,7 +3226,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 
 	if(g_Config.m_SvDDRaceTuneReset)
 	{
-		g_Config.m_SvHit = 1;
 		g_Config.m_SvEndlessDrag = 0;
 		g_Config.m_SvOldLaser = 0;
 		g_Config.m_SvOldTeleportHook = 0;
@@ -3398,11 +3377,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 				g_Config.m_SvEndlessDrag = 1;
 				dbg_msg("game_layer", "found unlimited hook time tile");
 			}
-			else if(Index == TILE_NOHIT)
-			{
-				g_Config.m_SvHit = 0;
-				dbg_msg("game_layer", "found no weapons hitting others tile");
-			}
 			else if(Index == TILE_NPH)
 			{
 				m_Tuning.Set("player_hooking", 0);
@@ -3432,11 +3406,6 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 				{
 					g_Config.m_SvEndlessDrag = 1;
 					dbg_msg("front_layer", "found unlimited hook time tile");
-				}
-				else if(Index == TILE_NOHIT)
-				{
-					g_Config.m_SvHit = 0;
-					dbg_msg("front_layer", "found no weapons hitting others tile");
 				}
 				else if(Index == TILE_NPH)
 				{

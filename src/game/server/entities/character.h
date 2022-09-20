@@ -46,7 +46,6 @@ public:
 	void SetWeapon(int W);
 	void SetJetpack(bool Active);
 	void SetSolo(bool Solo);
-	void SetSuper(bool Super);
 	void SetLiveFrozen(bool Active);
 	void SetDeepFrozen(bool Active);
 	void HandleWeaponSwitch();
@@ -167,7 +166,6 @@ public:
 	bool UnFreeze();
 	void GiveAllWeapons();
 	void ResetPickups();
-	int m_DDRaceState;
 	int Team();
 	bool CanCollide(int ClientID);
 	bool SameTeam(int ClientID);
@@ -238,14 +236,6 @@ public:
 	bool GrenadeHitDisabled() { return m_Core.m_GrenadeHitDisabled; }
 
 	bool IsSuper() { return m_Core.m_Super; }
-};
-
-enum
-{
-	DDRACE_NONE = 0,
-	DDRACE_STARTED,
-	DDRACE_CHEAT, // no time and won't start again unless ordered by a mod or death
-	DDRACE_FINISHED
 };
 
 #endif

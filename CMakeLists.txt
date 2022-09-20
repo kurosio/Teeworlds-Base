@@ -2518,7 +2518,6 @@ if(GTEST_FOUND OR DOWNLOAD_GTEST)
     os.cpp
     packer.cpp
     prng.cpp
-    score.cpp
     secure_random.cpp
     serverbrowser.cpp
     serverinfo.cpp

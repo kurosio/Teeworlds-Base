@@ -140,21 +140,6 @@ void CCharacter::SetSolo(bool Solo)
 	GameServer()->SendTuningParams(m_pPlayer->GetCID(), m_TuneZone); // update tunings
 }
 
-void CCharacter::SetSuper(bool Super)
-{
-	m_Core.m_Super = Super;
-	if(Super)
-	{
-		m_TeamBeforeSuper = Team();
-		Teams()->SetCharacterTeam(GetPlayer()->GetCID(), TEAM_SUPER);
-		m_DDRaceState = DDRACE_CHEAT;
-	}
-	else
-	{
-		Teams()->SetForceCharacterTeam(GetPlayer()->GetCID(), m_TeamBeforeSuper);
-	}
-}
-
 void CCharacter::SetLiveFrozen(bool Active)
 {
 	m_Core.m_LiveFrozen = Active;
@@ -2188,49 +2173,22 @@ void CCharacter::Pause(bool Pause)
 void CCharacter::DDRaceInit()
 {
 	m_Paused = false;
-	m_DDRaceState = DDRACE_NONE;
 	m_PrevPos = m_Pos;
 	m_LastBroadcast = 0;
 	m_TeamBeforeSuper = 0;
 	m_Core.m_Id = GetPlayer()->GetCID();
 	m_TeleCheckpoint = 0;
 	m_Core.m_EndlessHook = g_Config.m_SvEndlessDrag;
-	if(g_Config.m_SvHit)
-	{
-		m_Core.m_HammerHitDisabled = false;
-		m_Core.m_ShotgunHitDisabled = false;
-		m_Core.m_GrenadeHitDisabled = false;
-		m_Core.m_LaserHitDisabled = false;
-	}
-	else
-	{
-		m_Core.m_HammerHitDisabled = true;
-		m_Core.m_ShotgunHitDisabled = true;
-		m_Core.m_GrenadeHitDisabled = true;
-		m_Core.m_LaserHitDisabled = true;
-	}
+
+	m_Core.m_HammerHitDisabled = false;
+	m_Core.m_ShotgunHitDisabled = false;
+	m_Core.m_GrenadeHitDisabled = false;
+	m_Core.m_LaserHitDisabled = false;
+
 	m_Core.m_Jumps = 2;
 	m_FreezeHammer = false;
 
 	int Team = Teams()->m_Core.Team(m_Core.m_Id);
-
-	if(Teams()->TeamLocked(Team))
-	{
-		for(int i = 0; i < MAX_CLIENTS; i++)
-		{
-			if(Teams()->m_Core.Team(i) == Team && i != m_Core.m_Id && GameServer()->m_apPlayers[i])
-			{
-				CCharacter *pChar = GameServer()->m_apPlayers[i]->GetCharacter();
-
-				if(pChar)
-				{
-					m_DDRaceState = pChar->m_DDRaceState;
-					m_StartTime = pChar->m_StartTime;
-				}
-			}
-		}
-	}
-
 	if(g_Config.m_SvTeam == SV_TEAM_MANDATORY && Team == TEAM_FLOCK)
 	{
 		GameServer()->SendStartWarning(GetPlayer()->GetCID(), "Please join a team before you start");

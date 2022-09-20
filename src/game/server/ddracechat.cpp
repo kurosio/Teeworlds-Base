@@ -180,13 +180,6 @@ void CGameContext::ConSettings(IConsole::IResult *pResult, void *pUserData)
 					"Players hook time is unlimited" :
 					"Players hook time is limited");
 		}
-		else if(str_comp(pArg, "hitting") == 0)
-		{
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
-				g_Config.m_SvHit ?
-					"Players weapons affect others" :
-					"Players weapons has no affect on others");
-		}
 		else if(str_comp(pArg, "oldlaser") == 0)
 		{
 			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
@@ -520,99 +513,6 @@ void CGameContext::ConPractice(IConsole::IResult *pResult, void *pUserData)
 	}
 }
 
-void CGameContext::ConSwap(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	const char *pName = pResult->GetString(0);
-
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-
-	if(!g_Config.m_SvSwap)
-	{
-		pSelf->Console()->Print(
-			IConsole::OUTPUT_LEVEL_STANDARD,
-			"chatresp",
-			"Swap is disabled on this server.");
-		return;
-	}
-
-	CGameTeams &Teams = ((CGameControllerDDRace *)pSelf->m_pController)->m_Teams;
-
-	int Team = Teams.m_Core.Team(pResult->m_ClientID);
-
-	if(Team < TEAM_FLOCK || Team >= TEAM_SUPER)
-	{
-		pSelf->Console()->Print(
-			IConsole::OUTPUT_LEVEL_STANDARD,
-			"chatresp",
-			"Join a team to use swap feature, which means you can swap positions with each other.");
-		return;
-	}
-
-	int TargetClientId = -1;
-	for(int i = 0; i < MAX_CLIENTS; i++)
-	{
-		if(pSelf->m_apPlayers[i] && !str_comp(pName, pSelf->Server()->ClientName(i)))
-		{
-			TargetClientId = i;
-			break;
-		}
-	}
-
-	if(TargetClientId < 0)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Player not found");
-		return;
-	}
-
-	if(TargetClientId == pResult->m_ClientID)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Can't swap with yourself");
-		return;
-	}
-
-	int TargetTeam = Teams.m_Core.Team(TargetClientId);
-	if(TargetTeam != Team)
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Player is on a different team");
-		return;
-	}
-
-	CPlayer *pSwapPlayer = pSelf->m_apPlayers[TargetClientId];
-	if(Team == TEAM_FLOCK && g_Config.m_SvTeam != 3)
-	{
-		CCharacter *pChr = pPlayer->GetCharacter();
-		CCharacter *pSwapChr = pSwapPlayer->GetCharacter();
-		if(!pChr || !pSwapChr || pChr->m_DDRaceState != DDRACE_STARTED || pSwapChr->m_DDRaceState != DDRACE_STARTED)
-		{
-			pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "You and other player need to have started the map");
-			return;
-		}
-	}
-	else if(!Teams.IsStarted(Team))
-	{
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp", "Need to have started the map to swap with a player.");
-		return;
-	}
-
-	bool SwapPending = pSwapPlayer->m_SwapTargetsClientID != pResult->m_ClientID;
-	if(SwapPending)
-	{
-		if(pSelf->ProcessSpamProtection(pResult->m_ClientID))
-			return;
-
-		Teams.RequestTeamSwap(pPlayer, pSwapPlayer, Team);
-		return;
-	}
-
-	Teams.SwapTeamCharacters(pPlayer, pSwapPlayer, Team);
-}
-
 void CGameContext::ConMe(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext *)pUserData;
@@ -874,23 +774,4 @@ void CGameContext::ConTele(IConsole::IResult *pResult, void *pUserData)
 	pSelf->Teleport(pChr, Pos);
 	pChr->UnFreeze();
 	pChr->Core()->m_Vel = vec2(0, 0);
-}
-
-void CGameContext::ConProtectedKill(IConsole::IResult *pResult, void *pUserData)
-{
-	CGameContext *pSelf = (CGameContext *)pUserData;
-	if(!CheckClientID(pResult->m_ClientID))
-		return;
-	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientID];
-	if(!pPlayer)
-		return;
-	CCharacter *pChr = pPlayer->GetCharacter();
-	if(!pChr)
-		return;
-
-	int CurrTime = (pSelf->Server()->Tick() - pChr->m_StartTime) / pSelf->Server()->TickSpeed();
-	if(g_Config.m_SvKillProtection != 0 && CurrTime >= (60 * g_Config.m_SvKillProtection) && pChr->m_DDRaceState == DDRACE_STARTED)
-	{
-		pPlayer->KillCharacter(WEAPON_SELF);
-	}
 }

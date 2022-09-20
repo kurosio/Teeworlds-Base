@@ -69,7 +69,7 @@ void CGameTeams::ResetSwitchers(int Team)
 
 void CGameTeams::OnCharacterStart(int ClientID)
 {
-	int Tick = Server()->Tick();
+	/*int Tick = Server()->Tick();
 	CCharacter *pStartingChar = Character(ClientID);
 	if(!pStartingChar)
 		return;
@@ -179,7 +179,7 @@ void CGameTeams::OnCharacterStart(int ClientID)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 void CGameTeams::OnCharacterFinish(int ClientID)
@@ -362,10 +362,10 @@ const char *CGameTeams::SetCharacterTeam(int ClientID, int Team)
 		return "You are in this team already";
 	if(!Character(ClientID))
 		return "Your character is not valid";
-	if(Team == TEAM_SUPER && !Character(ClientID)->IsSuper())
-		return "You can't join super team if you don't have super rights";
-	if(Team != TEAM_SUPER && Character(ClientID)->m_DDRaceState != DDRACE_NONE)
-		return "You have started racing already";
+	//if(Team == TEAM_SUPER && !Character(ClientID)->IsSuper())
+	//	return "You can't join super team if you don't have super rights";
+	//if(Team != TEAM_SUPER && Character(ClientID)->m_DDRaceState != DDRACE_NONE)
+	//	return "You have started racing already";
 	// No cheating through noob filter with practice and then leaving team
 	if(m_aPractice[m_Core.Team(ClientID)])
 		return "You have used practice mode already";
@@ -577,23 +577,24 @@ void CGameTeams::SendTeamsState(int ClientID)
 
 int CGameTeams::GetDDRaceState(CPlayer *Player)
 {
-	if(!Player)
-		return DDRACE_NONE;
-
-	CCharacter *pChar = Player->GetCharacter();
-	if(pChar)
-		return pChar->m_DDRaceState;
-	return DDRACE_NONE;
+	// if(!Player)
+	// 	return DDRACE_NONE;
+	//
+	// CCharacter *pChar = Player->GetCharacter();
+	// if(pChar)
+	// 	return pChar->m_DDRaceState;
+	// return DDRACE_NONE;
+	return 0;
 }
 
 void CGameTeams::SetDDRaceState(CPlayer *Player, int DDRaceState)
 {
-	if(!Player)
-		return;
-
-	CCharacter *pChar = Player->GetCharacter();
-	if(pChar)
-		pChar->m_DDRaceState = DDRaceState;
+	// if(!Player)
+	// 	return;
+	//
+	// CCharacter *pChar = Player->GetCharacter();
+	// if(pChar)
+	// 	pChar->m_DDRaceState = DDRaceState;
 }
 
 int CGameTeams::GetStartTime(CPlayer *Player)
@@ -817,7 +818,7 @@ void CGameTeams::OnFinish(CPlayer *Player, float Time, const char *pTimestamp)
 
 void CGameTeams::RequestTeamSwap(CPlayer *pPlayer, CPlayer *pTargetPlayer, int Team)
 {
-	if(!pPlayer || !pTargetPlayer)
+	/*if(!pPlayer || !pTargetPlayer)
 		return;
 
 	char aBuf[512];
@@ -859,7 +860,7 @@ void CGameTeams::RequestTeamSwap(CPlayer *pPlayer, CPlayer *pTargetPlayer, int T
 	}
 
 	pPlayer->m_SwapTargetsClientID = pTargetPlayer->GetCID();
-	m_aLastSwap[Team] = Server()->Tick();
+	m_aLastSwap[Team] = Server()->Tick();*/
 }
 
 void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPlayer, int Team)

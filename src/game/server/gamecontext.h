@@ -315,8 +315,6 @@ private:
 	static void ConUnDeep(IConsole::IResult *pResult, void *pUserData);
 	static void ConLiveFreeze(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnLiveFreeze(IConsole::IResult *pResult, void *pUserData);
-	static void ConUnSuper(IConsole::IResult *pResult, void *pUserData);
-	static void ConSuper(IConsole::IResult *pResult, void *pUserData);
 	static void ConShotgun(IConsole::IResult *pResult, void *pUserData);
 	static void ConGrenade(IConsole::IResult *pResult, void *pUserData);
 	static void ConLaser(IConsole::IResult *pResult, void *pUserData);
@@ -360,7 +358,6 @@ private:
 	static void ConDND(IConsole::IResult *pResult, void *pUserData);
 	static void ConTimeout(IConsole::IResult *pResult, void *pUserData);
 	static void ConPractice(IConsole::IResult *pResult, void *pUserData);
-	static void ConSwap(IConsole::IResult *pResult, void *pUserData);
 	static void ConBroadTime(IConsole::IResult *pResult, void *pUserData);
 	static void ConMe(IConsole::IResult *pResult, void *pUserData);
 	static void ConWhisper(IConsole::IResult *pResult, void *pUserData);
@@ -373,7 +370,6 @@ private:
 	static void ConSpecTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConNinjaJetpack(IConsole::IResult *pResult, void *pUserData);
 	static void ConTele(IConsole::IResult *pResult, void *pUserData);
-	static void ConProtectedKill(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConVoteMute(IConsole::IResult *pResult, void *pUserData);
 	static void ConVoteUnmute(IConsole::IResult *pResult, void *pUserData);
@@ -387,7 +383,6 @@ private:
 	static void ConModerate(IConsole::IResult *pResult, void *pUserData);
 
 	static void ConList(IConsole::IResult *pResult, void *pUserData);
-	static void ConSetDDRTeam(IConsole::IResult *pResult, void *pUserData);
 	static void ConUninvite(IConsole::IResult *pResult, void *pUserData);
 	static void ConFreezeHammer(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnFreezeHammer(IConsole::IResult *pResult, void *pUserData);

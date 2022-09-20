@@ -1978,8 +1978,6 @@ void CCharacter::DDRacePostCoreTick()
 		m_TeleGunTeleport = false;
 		m_IsBlueTeleGunTeleport = false;
 	}
-
-	HandleBroadcast();
 }
 
 bool CCharacter::Freeze(int Seconds)

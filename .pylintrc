@@ -1,3 +1,8 @@
+[MASTER]
+
+ignore-paths=^libraries/.*$
+
+
 [MESSAGES CONTROL]
 
 indent-string='	'
@@ -8,7 +13,6 @@ disable=
   C0115, # missing-class-docstring
   C0116, # missing-function-docstring
   C0301, # line-too-long
-  C0303, # trailling whitespace
   C0326, # bad-whitespace
   C0330, # bad-continuation
   E0402, # relative-beyond-top-level

@@ -226,7 +226,7 @@ cp ../scripts/android/files/java/tw/DDNet/NativeMain.java src/main/java/tw/DDNet
 
 rm -R src/main/java/org
 cp -R ../scripts/android/files/java/org src/main/java/
-cp -R ../ddnet-libs/sdl/java/org src/main/java/
+cp -R ../libraries/sdl/java/org src/main/java/
 
 # shellcheck disable=SC1091
 source ./build.sh "$ANDROID_HOME" "$_DEFAULT_GAME_NAME" "$_DEFAULT_BUILD_TYPE"

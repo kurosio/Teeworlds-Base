@@ -79,7 +79,7 @@ jobs:
       env: ${{ matrix.env }}
       run: |
         cd debug
-        ./Toutuo-Server shutdown
+        ./DDNet-Server shutdown
     - name: Build in release mode
       env: ${{ matrix.env }}
       run: |
@@ -96,7 +96,7 @@ jobs:
       env: ${{ matrix.env }}
       run: |
         cd release
-        ./Toutuo-Server shutdown
+        ./DDNet-Server shutdown
     - name: Package
       run: |
         cd release
